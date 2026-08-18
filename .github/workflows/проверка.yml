@@ -1,0 +1,27 @@
+name: Проверка Windows-сборки
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Получение исходников
+        uses: actions/checkout@v4
+      - name: Установка .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Публикация
+        shell: pwsh
+        run: dotnet publish src/WinClicker/WinClicker.csproj --configuration Release --runtime win-x64 --self-contained true --output build/publish -p:PublishSingleFile=true -p:DebugType=None -p:DebugSymbols=false
+      - name: Встроенная проверка
+        shell: pwsh
+        run: ./build/publish/AutoClicker.exe --self-test

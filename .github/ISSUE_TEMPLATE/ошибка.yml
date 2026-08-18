@@ -1,0 +1,42 @@
+name: Сообщить об ошибке
+description: Воспроизводимая проблема в Auto Clicker
+title: "[Ошибка]: "
+labels:
+  - ошибка
+body:
+  - type: markdown
+    attributes:
+      value: Спасибо за сообщение. Заполните данные без личной информации.
+  - type: input
+    id: version
+    attributes:
+      label: Версия Auto Clicker
+      placeholder: 3.0.1
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Windows и Minecraft
+      placeholder: Windows 11 24H2, Minecraft Java 1.21.x
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Как воспроизвести
+      description: Перечислите точные шаги, хоткеи, режимы и интервалы.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Ожидаемое поведение
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Фактическое поведение
+    validations:
+      required: true

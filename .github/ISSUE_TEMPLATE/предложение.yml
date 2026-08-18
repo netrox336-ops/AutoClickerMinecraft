@@ -1,0 +1,32 @@
+name: Предложить улучшение
+description: Новая функция или улучшение существующего поведения
+title: "[Улучшение]: "
+labels:
+  - улучшение
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Какую проблему решает предложение
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Предлагаемое решение
+      description: Опишите поведение и место функции в интерфейсе.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Область
+      options:
+        - Ядро кликов
+        - Хоткеи
+        - Overlay
+        - Интерфейс
+        - Установщик и обновления
+        - Документация
+    validations:
+      required: true

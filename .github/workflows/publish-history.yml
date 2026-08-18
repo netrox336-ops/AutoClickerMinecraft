@@ -1,0 +1,61 @@
+name: Публикация истории релизов
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/publish-history.yml
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Получение исходников
+        uses: actions/checkout@v4
+
+      - name: Создание русских меток
+        shell: bash
+        run: |
+          gh label create "ошибка" --color D73A4A --description "Подтверждённая или предполагаемая ошибка" --force
+          gh label create "улучшение" --color A2EEEF --description "Новое поведение или улучшение продукта" --force
+          gh label create "интерфейс" --color C5DEF5 --description "Дизайн, компоновка и анимации" --force
+          gh label create "ядро" --color B60205 --description "Click engine, hotkeys и безопасность остановки" --force
+          gh label create "overlay" --color 5319E7 --description "Игровой HUD и Minecraft borderless" --force
+          gh label create "тестирование" --color FEF2C0 --description "Проверки совместимости и регрессии" --force
+          gh label create "документация" --color 0075CA --description "Русская документация проекта" --force
+          gh label create "инфраструктура" --color 0E8A16 --description "Сборка, установщик, CI и релизы" --force
+          gh label create "безопасность" --color EE0701 --description "Безопасность приложения и цепочки поставки" --force
+
+      - name: Публикация архивов версий
+        shell: bash
+        run: |
+          cat release-assets/AutoClicker-v3.0.0-Product-source.zip.part-* > release-assets/AutoClicker-v3.0.0-Product-source.zip
+
+          publish_release() {
+            tag="$1"
+            title="$2"
+            asset="$3"
+            notes="$4"
+            if gh release view "$tag" >/dev/null 2>&1; then
+              gh release upload "$tag" "$asset" --clobber
+              gh release edit "$tag" --title "$title" --notes-file "$notes"
+            else
+              gh release create "$tag" "$asset" --target "$GITHUB_SHA" --title "$title" --notes-file "$notes"
+            fi
+          }
+
+          publish_release v1.0.0 "Auto Clicker 1.0.0" "release-assets/WinClicker-v1.0.0-source.zip" "release-notes/v1.0.0.md"
+          publish_release v1.0.1 "Auto Clicker 1.0.1" "release-assets/WinClicker-v1.0.1-fixed.zip" "release-notes/v1.0.1.md"
+          publish_release v1.1.0 "Auto Clicker 1.1.0" "release-assets/WinClicker-Ultra-v1.1.0-source.zip" "release-notes/v1.1.0.md"
+          publish_release v2.0.0 "Auto Clicker 2.0.0" "release-assets/AutoClicker-v2.0.0-source.zip" "release-notes/v2.0.0.md"
+          publish_release v2.1.0 "Auto Clicker 2.1.0 Core" "release-assets/AutoClicker-v2.1.0-Core-source.zip" "release-notes/v2.1.0.md"
+          publish_release v3.0.0 "Auto Clicker 3.0.0" "release-assets/AutoClicker-v3.0.0-Product-source.zip" "release-notes/v3.0.0.md"
+          publish_release v3.0.1 "Auto Clicker 3.0.1 — Hotfix" "release-assets/AutoClicker-v3.0.1-Hotfix-source.zip" "release-notes/v3.0.1.md"
+          gh release edit v3.0.1 --latest
